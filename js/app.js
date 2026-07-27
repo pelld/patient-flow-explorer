@@ -51,7 +51,7 @@ function createDomainMarkup(label, value) {
 }
 
 /* ========================================================================== 
-   02A. CATEGORISED STATEMENT CARD RENDERING
+   02A. CATEGORISED AND COLLAPSIBLE STATEMENT RENDERING
    ========================================================================== */
 
 function createStatementCardMarkup(statement) {
@@ -74,15 +74,18 @@ function createCategorySectionMarkup(category) {
     }
 
     return `
-        <section class="category-section" id="category-${toClassName(category)}">
-            <header class="category-heading">
+        <details class="category-section" id="category-${toClassName(category)}" open>
+            <summary class="category-heading">
                 <h2><span class="category-dot category-dot--${toClassName(category)}"></span>${category}</h2>
-                <span>${categoryStatements.length} statements</span>
-            </header>
+                <span class="category-heading__meta">
+                    <span>${categoryStatements.length} statements</span>
+                    <span class="category-chevron" aria-hidden="true">⌄</span>
+                </span>
+            </summary>
             <div class="statement-grid">
                 ${categoryStatements.map(createStatementCardMarkup).join("")}
             </div>
-        </section>
+        </details>
     `;
 }
 
