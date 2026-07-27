@@ -6,7 +6,7 @@
          =================================================================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="An evidence-led tool for exploring how changes in access and capacity affect patient choices, service flows and system pressure.">
+    <meta name="description" content="Explore why patients choose different health services and what may happen when one part of the system changes.">
     <title>Health System Levers</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -14,173 +14,165 @@
     <!-- ===================================================================
          00B. WIDE PAGE SHELL
          =================================================================== -->
-    <div class="app-shell">
-        <main class="main-content">
-            <header class="page-header">
-                <div>
-                    <h1>Health System Levers</h1>
-                    <p>Explore how patient choices are shaped by the health system, how those choices create demand, and what may happen when access or capacity changes.</p>
-                </div>
-                <span class="prototype-badge">Early prototype</span>
-            </header>
-
-            <div class="content-stack">
-                <!-- =======================================================
-                     01A. PATIENT CHOICE AND SYSTEM FEEDBACK
-                     ======================================================= -->
-                <section class="panel" aria-labelledby="pathway-title">
-                    <div class="panel-heading">
-                        <div>
-                            <h2 id="pathway-title">How a patient reaches a service</h2>
-                            <p>The patient does not choose from a blank page. Their perceived need is filtered through the options the system makes visible, available and practical.</p>
-                        </div>
-                    </div>
-
-                    <div class="pathway-grid">
-                        <article class="pathway-stage">
-                            <h3>1. Need arises</h3>
-                            <p>Symptoms, deterioration, injury, distress, concern or advice from another person.</p>
-                        </article>
-
-                        <article class="pathway-stage">
-                            <h3>2. Patient judges the options</h3>
-                            <p>Clinical need may differ from perceived need. The choice is shaped by both perception and access.</p>
-                            <div class="influence-list" aria-label="Factors influencing patient choice">
-                                <span class="influence-chip">Perceived acuity</span>
-                                <span class="influence-chip">Appointment availability</span>
-                                <span class="influence-chip">Opening hours</span>
-                                <span class="influence-chip">Distance</span>
-                                <span class="influence-chip">Expected wait</span>
-                                <span class="influence-chip">Previous experience</span>
-                                <span class="influence-chip">Trust</span>
-                                <span class="influence-chip">Knowledge</span>
-                                <span class="influence-chip">Transport</span>
-                            </div>
-                        </article>
-
-                        <article class="pathway-stage">
-                            <h3>3. A service is chosen or reached</h3>
-                            <div class="service-grid">
-                                <div class="service-node">
-                                    <h4>GP</h4>
-                                    <p>Continuity, familiarity and perceived suitability, constrained by timely access.</p>
-                                    <button class="evidence-link" type="button" data-evidence-id="E01">Evidence E01</button>
-                                </div>
-
-                                <div class="service-node">
-                                    <h4>NHS 111</h4>
-                                    <p>Used when the patient is uncertain, cannot access another service or wants triage.</p>
-                                </div>
-
-                                <div class="service-node">
-                                    <h4>UTC</h4>
-                                    <p>Influenced by proximity, awareness, opening hours and confidence it can resolve the problem.</p>
-                                </div>
-
-                                <div class="service-node">
-                                    <h4>A&amp;E</h4>
-                                    <p>Influenced by acuity, 24-hour access, perceived capability, distance and expected waits.</p>
-                                    <button class="evidence-link" type="button" data-evidence-id="E02">Evidence E02</button>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-
-                    <div class="feedback-strip" aria-label="System feedback loop">
-                        <div class="feedback-box">Patient choices create demand</div>
-                        <div class="feedback-arrow" aria-hidden="true">→</div>
-                        <div class="feedback-box">Demand changes capacity, access and waits</div>
-                        <div class="feedback-arrow" aria-hidden="true">→</div>
-                        <div class="feedback-box">The changed system influences future choices</div>
-                    </div>
-                </section>
-
-                <!-- =======================================================
-                     02A. FIRST WHAT-IF MODEL
-                     ======================================================= -->
-                <section class="panel" aria-labelledby="scenario-title">
-                    <div class="panel-heading">
-                        <div>
-                            <h2 id="scenario-title">What if usable urgent GP appointments increased?</h2>
-                            <p>This first scenario tests a deliberately narrow relationship. It distinguishes minor A&amp;E activity, total A&amp;E activity and waiting-time performance rather than treating them as the same outcome.</p>
-                        </div>
-                    </div>
-
-                    <div class="scenario-layout">
-                        <div class="control-panel">
-                            <label for="gp-change">Increase in urgent GP appointments <span class="control-value" id="gp-change-value">10%</span></label>
-                            <input id="gp-change" type="range" min="0" max="30" step="1" value="10">
-                            <p class="assumption-note">Prototype baseline: 100,000 urgent GP appointments, 10,000 minor A&amp;E attendances and 50,000 total A&amp;E attendances per month. These are illustrative, not local data.</p>
-                        </div>
-
-                        <div>
-                            <div class="output-grid">
-                                <article class="output-card">
-                                    <div class="output-card__label">Additional GP appointments offered</div>
-                                    <div class="output-card__value" id="output-extra-gp">—</div>
-                                    <div class="output-card__note">Direct result of the selected change.</div>
-                                </article>
-
-                                <article class="output-card">
-                                    <div class="output-card__label">Estimated minor A&amp;E attendances avoided</div>
-                                    <div class="output-card__value" id="output-minor-ae">—</div>
-                                    <div class="output-card__note">Provisional sensitivity range, capped at 30% of minor activity. <button class="evidence-link" type="button" data-evidence-id="E02">E02</button></div>
-                                </article>
-
-                                <article class="output-card">
-                                    <div class="output-card__label">Estimated change in total A&amp;E attendance</div>
-                                    <div class="output-card__value" id="output-total-ae">—</div>
-                                    <div class="output-card__note">Smaller because only part of total A&amp;E activity is substitutable.</div>
-                                </article>
-
-                                <article class="output-card">
-                                    <div class="output-card__label">Estimated change in A&amp;E waits</div>
-                                    <div class="output-card__value" id="output-waits">—</div>
-                                    <div class="output-card__note">Requires a local arrivals-to-waits model. <button class="evidence-link" type="button" data-evidence-id="E03">E03</button></div>
-                                </article>
-                            </div>
-
-                            <div class="model-warning">
-                                <strong>What this currently means:</strong> published evidence supports some substitution of minor A&amp;E activity, but does not justify a universal estimate for A&amp;E waits. The missing relationship is shown rather than silently guessed.
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- =======================================================
-                     03A. DECISION-SUPPORT PURPOSE
-                     ======================================================= -->
-                <section class="panel" aria-labelledby="decision-title">
-                    <div class="panel-heading">
-                        <div>
-                            <h2 id="decision-title">The intended decision</h2>
-                            <p>Compare how much change is required, what resources it needs, the likely effect across the pathway, and how confident we can be in that estimate.</p>
-                        </div>
-                    </div>
-
-                    <div class="feedback-strip">
-                        <div class="feedback-box">Changeable lever</div>
-                        <div class="feedback-arrow" aria-hidden="true">→</div>
-                        <div class="feedback-box">Effort, workforce and cost</div>
-                        <div class="feedback-arrow" aria-hidden="true">→</div>
-                        <div class="feedback-box">Impact, knock-on effects and uncertainty</div>
-                    </div>
-                </section>
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1>Health System Levers</h1>
+                <p>See why patients choose different services, and test how changing one part of the system may affect the rest.</p>
             </div>
-        </main>
+            <span class="prototype-badge">Prototype</span>
+        </header>
 
-        <!-- ===============================================================
-             04A. ALWAYS-VISIBLE EVIDENCE REGISTER
-             =============================================================== -->
-        <aside class="evidence-panel" aria-labelledby="evidence-title">
-            <h2 id="evidence-title">Evidence and estimates</h2>
-            <p class="evidence-panel__intro" id="evidence-summary">Loading evidence register…</p>
-            <div class="evidence-list" id="evidence-list"></div>
-        </aside>
+        <div class="workspace">
+            <!-- ===========================================================
+                 01A. SIMPLE PATIENT CHOICE MAP
+                 =========================================================== -->
+            <section class="panel pathway-panel" aria-labelledby="pathway-title">
+                <div class="panel-heading">
+                    <h2 id="pathway-title">How a patient chooses where to go</h2>
+                    <p>The choice depends on both the health problem and the options the system makes practical.</p>
+                </div>
+
+                <div class="pathway-grid">
+                    <article class="pathway-stage pathway-stage--need">
+                        <div class="step-number">1</div>
+                        <div>
+                            <h3>Something happens</h3>
+                            <p>Symptoms, injury, distress or a condition getting worse.</p>
+                        </div>
+                    </article>
+
+                    <div class="pathway-arrow" aria-hidden="true">→</div>
+
+                    <article class="pathway-stage pathway-stage--choice">
+                        <div class="step-number">2</div>
+                        <div>
+                            <h3>The patient weighs up what to do</h3>
+                            <p>What feels right may differ from what a clinician later decides.</p>
+                        </div>
+
+                        <div class="influence-list" aria-label="Things that affect the patient's choice">
+                            <span>How serious does it feel?</span>
+                            <span>Can I get an appointment?</span>
+                            <span>Is it open now?</span>
+                            <span>How far is it?</span>
+                            <span>How long will I wait?</span>
+                            <span>Did it help last time?</span>
+                            <span>Do I know it exists?</span>
+                        </div>
+                    </article>
+
+                    <div class="pathway-arrow" aria-hidden="true">→</div>
+
+                    <article class="pathway-stage pathway-stage--services">
+                        <div class="step-number">3</div>
+                        <div>
+                            <h3>They use a service</h3>
+                            <p>Sometimes this is a free choice. Sometimes it is the only realistic option.</p>
+                        </div>
+
+                        <div class="service-grid">
+                            <div class="service-node">
+                                <div class="service-title-row">
+                                    <h4>GP</h4>
+                                    <button class="info-button" type="button" data-evidence-id="E01" aria-label="Show evidence about GP access and A&E use">i</button>
+                                </div>
+                                <p>I think a GP can help and I can get an appointment.</p>
+                            </div>
+
+                            <div class="service-node">
+                                <h4>NHS 111</h4>
+                                <p>I am unsure what to do or need advice.</p>
+                            </div>
+
+                            <div class="service-node">
+                                <h4>UTC</h4>
+                                <p>It is nearby, open and can deal with this.</p>
+                            </div>
+
+                            <div class="service-node">
+                                <h4>A&amp;E</h4>
+                                <p>It feels serious, or other options are not practical.</p>
+                            </div>
+
+                            <div class="service-node">
+                                <h4>999</h4>
+                                <p>It feels life-threatening or I cannot get there safely.</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="feedback-strip" aria-label="How patient choices feed back into the system">
+                    <div>Patient choices add to demand</div>
+                    <span aria-hidden="true">→</span>
+                    <div>Demand changes access and waits</div>
+                    <span aria-hidden="true">→</span>
+                    <div>This shapes the next choice</div>
+                </div>
+            </section>
+
+            <!-- ===========================================================
+                 02A. FIRST WHAT-IF EXAMPLE
+                 =========================================================== -->
+            <section class="panel model-panel" aria-labelledby="model-title">
+                <div class="panel-heading">
+                    <h2 id="model-title">Try a change</h2>
+                    <p>What if urgent GP appointments increased?</p>
+                </div>
+
+                <div class="control-panel">
+                    <label for="gp-change">Increase urgent GP appointments <strong id="gp-change-value">10%</strong></label>
+                    <input id="gp-change" type="range" min="0" max="30" step="1" value="10">
+                    <p>Illustrative example: 100,000 urgent GP appointments and 50,000 A&amp;E visits each month.</p>
+                </div>
+
+                <div class="output-grid" aria-live="polite">
+                    <article class="output-card">
+                        <div class="output-card__label">Extra GP appointments</div>
+                        <div class="output-card__value" id="output-extra-gp">—</div>
+                    </article>
+
+                    <article class="output-card">
+                        <div class="output-card__topline">
+                            <div class="output-card__label">Fewer minor A&amp;E visits</div>
+                            <button class="info-button" type="button" data-evidence-id="E02" aria-label="Show evidence about extra GP access and minor A&E visits">i</button>
+                        </div>
+                        <div class="output-card__value" id="output-minor-ae">—</div>
+                    </article>
+
+                    <article class="output-card">
+                        <div class="output-card__topline">
+                            <div class="output-card__label">Change in all A&amp;E visits</div>
+                            <button class="info-button" type="button" data-evidence-id="E02" aria-label="Show evidence about extra GP access and total A&E visits">i</button>
+                        </div>
+                        <div class="output-card__value" id="output-total-ae">—</div>
+                    </article>
+
+                    <article class="output-card">
+                        <div class="output-card__topline">
+                            <div class="output-card__label">Change in A&amp;E waits</div>
+                            <button class="info-button" type="button" data-evidence-id="E03" aria-label="Show evidence about A&E arrivals and waits">i</button>
+                        </div>
+                        <div class="output-card__value output-card__value--small" id="output-waits">—</div>
+                    </article>
+                </div>
+
+                <p class="model-note">This shows what is known, what is estimated and what is still missing. It does not pretend every relationship is certain.</p>
+            </section>
+        </div>
+    </main>
+
+    <!-- ===================================================================
+         03A. SHARED EVIDENCE TOOLTIP
+         =================================================================== -->
+    <div class="evidence-tooltip" id="evidence-tooltip" role="tooltip" hidden>
+        <button class="tooltip-close" id="tooltip-close" type="button" aria-label="Close evidence">×</button>
+        <div id="tooltip-content"></div>
     </div>
 
     <!-- ===================================================================
-         05A. DATA AND APPLICATION SCRIPTS
+         04A. DATA AND APPLICATION SCRIPTS
          =================================================================== -->
     <script src="data/evidence.js"></script>
     <script src="js/app.js"></script>
