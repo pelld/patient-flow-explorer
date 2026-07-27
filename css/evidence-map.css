@@ -1,0 +1,348 @@
+/* ========================================================================== 
+   00A. EVIDENCE MAP PANEL
+   ========================================================================== */
+
+.evidence-map-panel {
+    margin-bottom: 26px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--panel-bg);
+    box-shadow: var(--shadow);
+    padding: 16px;
+}
+
+.evidence-map-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+    gap: 24px;
+    align-items: end;
+    margin-bottom: 12px;
+}
+
+.evidence-map-heading h2 {
+    margin: 0;
+    font-size: 1.35rem;
+}
+
+.evidence-map-heading p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.evidence-map-heading .evidence-map-caution {
+    margin: 0;
+    text-align: right;
+    font-size: 0.8rem;
+}
+
+/* ========================================================================== 
+   00B. CHART SURFACE AND QUADRANTS
+   ========================================================================== */
+
+.evidence-map {
+    position: relative;
+    height: 470px;
+    margin: 0 16px 40px 54px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: visible;
+    background:
+        linear-gradient(to right, rgba(232, 237, 241, 0.42) 0 50%, rgba(223, 243, 231, 0.42) 50% 100%),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0 50%, rgba(255, 240, 204, 0.28) 50% 100%);
+}
+
+.map-quadrant {
+    position: absolute;
+    z-index: 1;
+    color: rgba(31, 41, 51, 0.5);
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.25;
+    pointer-events: none;
+}
+
+.map-quadrant--top-left {
+    top: 12px;
+    left: 14px;
+}
+
+.map-quadrant--top-right {
+    top: 12px;
+    right: 14px;
+    text-align: right;
+}
+
+.map-quadrant--bottom-left {
+    bottom: 12px;
+    left: 14px;
+}
+
+.map-quadrant--bottom-right {
+    right: 14px;
+    bottom: 12px;
+    text-align: right;
+}
+
+.map-axis {
+    position: absolute;
+    z-index: 1;
+    background: rgba(95, 108, 120, 0.36);
+    pointer-events: none;
+}
+
+.map-axis--vertical {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+}
+
+.map-axis--horizontal {
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+}
+
+.map-axis-title {
+    position: absolute;
+    color: var(--text);
+    font-size: 0.78rem;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.map-axis-title--x {
+    bottom: -34px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.map-axis-title--y {
+    top: 50%;
+    left: -49px;
+    transform: translateY(-50%) rotate(-90deg);
+    white-space: nowrap;
+}
+
+/* ========================================================================== 
+   00C. AXIS LABELS
+   ========================================================================== */
+
+.map-y-label,
+.map-x-label {
+    position: absolute;
+    color: var(--muted);
+    font-size: 0.7rem;
+    pointer-events: none;
+}
+
+.map-y-label {
+    left: -48px;
+    transform: translateY(-50%);
+}
+
+.map-y-label--high { top: 10%; }
+.map-y-label--moderate { top: 34%; }
+.map-y-label--low { top: 66%; }
+.map-y-label--very-low { top: 90%; }
+
+.map-x-label {
+    bottom: -22px;
+    transform: translateX(-50%);
+}
+
+.map-x-label--none { left: 8%; }
+.map-x-label--unknown { left: 22%; }
+.map-x-label--weak { left: 38%; }
+.map-x-label--moderate { left: 68%; }
+.map-x-label--strong { left: 92%; }
+
+/* ========================================================================== 
+   00D. CLICKABLE MAP POINTS
+   ========================================================================== */
+
+.map-point {
+    position: absolute;
+    z-index: 5;
+    top: var(--point-y);
+    left: var(--point-x);
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    transform: translate(-50%, -50%);
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 2px 7px rgba(31, 41, 51, 0.28);
+    cursor: pointer;
+    padding: 0;
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.map-point:hover,
+.map-point:focus-visible {
+    z-index: 10;
+    transform: translate(-50%, -50%) scale(1.28);
+    box-shadow: 0 4px 12px rgba(31, 41, 51, 0.4);
+}
+
+/* ========================================================================== 
+   01A. DOMAIN COLOURS
+   ========================================================================== */
+
+.category-dot--primary-care-and-access,
+.map-point--primary-care-and-access {
+    background: #005eb8;
+}
+
+.category-dot--ambulance-and-pre-hospital-care,
+.map-point--ambulance-and-pre-hospital-care {
+    background: #7c3aed;
+}
+
+.category-dot--a-and-e-staffing-and-operations,
+.map-point--a-and-e-staffing-and-operations {
+    background: #d5281b;
+}
+
+.category-dot--hospital-flow-and-discharge,
+.map-point--hospital-flow-and-discharge {
+    background: #007f3b;
+}
+
+.category-dot--admission-avoidance-and-community-care,
+.map-point--admission-avoidance-and-community-care {
+    background: #a15c00;
+}
+
+.category-dot--mental-health-and-specialist-pathways,
+.map-point--mental-health-and-specialist-pathways {
+    background: #8a1538;
+}
+
+.category-dot {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.category-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.category-legend > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 0.76rem;
+}
+
+/* ========================================================================== 
+   02A. CATEGORISED STATEMENT SECTIONS
+   ========================================================================== */
+
+.category-list {
+    display: grid;
+    gap: 28px;
+}
+
+.category-section {
+    min-width: 0;
+}
+
+.category-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 11px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.category-heading h2 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0;
+    font-size: 1.22rem;
+}
+
+.category-heading > span {
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+.category-section .statement-grid {
+    align-items: stretch;
+}
+
+.category-section .statement-card {
+    height: 100%;
+}
+
+/* ========================================================================== 
+   03A. RESPONSIVE LAYOUT
+   ========================================================================== */
+
+@media (max-width: 900px) {
+    .evidence-map-heading {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .evidence-map-heading .evidence-map-caution {
+        text-align: left;
+    }
+
+    .evidence-map {
+        height: 410px;
+        margin-right: 4px;
+    }
+}
+
+@media (max-width: 650px) {
+    .evidence-map-panel {
+        padding: 12px;
+    }
+
+    .evidence-map {
+        height: 360px;
+        margin-left: 42px;
+    }
+
+    .map-point {
+        width: 26px;
+        height: 26px;
+        font-size: 0.62rem;
+    }
+
+    .map-quadrant {
+        font-size: 0.66rem;
+    }
+
+    .map-y-label {
+        left: -39px;
+        font-size: 0.62rem;
+    }
+
+    .map-axis-title--y {
+        left: -42px;
+    }
+
+    .category-heading {
+        align-items: flex-start;
+    }
+}
