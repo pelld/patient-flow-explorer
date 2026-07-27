@@ -80,6 +80,8 @@ function createEvidenceTooltipMarkup(statement) {
         ? `<ul class="tooltip-sources">${statement.sources.map(createSourceMarkup).join("")}</ul>`
         : `<p class="tooltip-source--missing">No direct source identified yet.</p>`;
 
+    const publicationBias = statement.publicationBias || "Not assessed separately in this initial rapid review.";
+
     return `
         <p class="tooltip-kicker">${statement.id} · Adapted GRADE</p>
         <h2 id="tooltip-title">${statement.statement}</h2>
@@ -98,6 +100,7 @@ function createEvidenceTooltipMarkup(statement) {
             ${createDomainMarkup("Consistency", statement.consistency)}
             ${createDomainMarkup("Precision", statement.precision)}
             ${createDomainMarkup("Directness", statement.directness)}
+            ${createDomainMarkup("Publication bias", publicationBias)}
             ${createDomainMarkup("Other factors", statement.otherFactors)}
             ${createDomainMarkup("Why this rating?", statement.ratingReason)}
         </dl>
