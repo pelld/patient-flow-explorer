@@ -66,7 +66,19 @@ const statementCategoryById = {
     S52: "Admission avoidance & community care",
     S53: "Admission avoidance & community care",
     S54: "Hospital flow & discharge",
-    S55: "Mental health & specialist pathways"
+    S55: "Mental health & specialist pathways",
+    S56: "Hospital flow & discharge",
+    S57: "Hospital flow & discharge",
+    S58: "Admission avoidance & community care",
+    S59: "Admission avoidance & community care",
+    S60: "A&E staffing & operations",
+    S61: "A&E staffing & operations",
+    S62: "Hospital flow & discharge",
+    S63: "Hospital flow & discharge",
+    S64: "Hospital flow & discharge",
+    S65: "Mental health & specialist pathways",
+    S66: "A&E staffing & operations",
+    S67: "A&E staffing & operations"
 };
 
 window.HEALTH_SYSTEM_STATEMENTS.forEach((statement) => {
