@@ -1,72 +1,122 @@
 /* ========================================================================== 
-   00A. METHOD PAGE LAYOUT
+   00A. COMPACT METHOD PAGE
    ========================================================================== */
 
 .method-page {
-    width: min(1320px, 100%);
+    width: min(1500px, 100%);
+    min-height: 100vh;
+    padding-top: 16px;
+    padding-bottom: 16px;
 }
 
-.method-panel {
-    margin-bottom: 14px;
+.method-header {
+    margin-bottom: 10px;
+}
+
+.method-header h1 {
+    font-size: clamp(2.15rem, 3.4vw, 3.35rem);
+}
+
+.method-header p {
+    margin-top: 5px;
+}
+
+.method-summary {
+    display: grid;
+    grid-template-columns: auto auto minmax(280px, 1fr);
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 12px;
     background: var(--panel-bg);
     box-shadow: var(--shadow);
-    padding: 18px;
+    padding: 10px 12px;
 }
 
-.method-panel h2 {
-    margin: 0 0 8px;
-    font-size: 1.2rem;
+.method-summary p {
+    margin: 0;
+    font-size: 0.84rem;
 }
 
-.method-panel > p {
-    max-width: 950px;
-    margin: 7px 0 0;
+.method-summary__note {
     color: var(--muted);
+    text-align: right;
 }
 
 /* ========================================================================== 
-   01A. SCORE AND DOMAIN GRIDS
+   01A. TWO-COLUMN METHOD LAYOUT
    ========================================================================== */
 
-.method-grid {
+.method-layout {
     display: grid;
+    grid-template-columns: minmax(380px, 0.9fr) minmax(620px, 1.45fr);
     gap: 10px;
-    margin-top: 12px;
+    align-items: stretch;
 }
 
-.method-grid--four {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.method-grid--three {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.method-grid article {
+.method-panel,
+.method-footer {
     border: 1px solid var(--border);
     border-radius: 12px;
+    background: var(--panel-bg);
+    box-shadow: var(--shadow);
+}
+
+.method-panel {
+    padding: 12px;
+}
+
+.method-panel h2,
+.method-footer h2 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* ========================================================================== 
+   01B. STARTING STUDY DESIGN
+   ========================================================================== */
+
+.design-list {
+    display: grid;
+    gap: 7px;
+    margin-top: 9px;
+}
+
+.design-list article {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 9px;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 10px;
     background: #f8fafb;
-    padding: 13px;
+    padding: 8px 9px;
 }
 
-.method-grid h3 {
-    margin: 8px 0 4px;
-    font-size: 0.98rem;
+.design-list h3,
+.domain-grid h3 {
+    margin: 0 0 2px;
+    font-size: 0.88rem;
 }
 
-.method-grid p {
+.design-list p,
+.domain-grid p,
+.method-footer p {
     margin: 0;
     color: var(--muted);
-    font-size: 0.86rem;
+    font-size: 0.76rem;
+    line-height: 1.32;
 }
 
 .method-score {
-    display: inline-block;
+    display: inline-grid;
+    min-width: 42px;
+    height: 30px;
+    place-items: center;
     border-radius: 999px;
-    padding: 5px 9px;
-    font-size: 0.8rem;
+    padding: 0 8px;
+    font-size: 0.76rem;
     font-weight: 700;
 }
 
@@ -91,41 +141,79 @@
 }
 
 /* ========================================================================== 
-   02A. SOURCES AND STATUS
+   02A. REVIEW DOMAINS
    ========================================================================== */
 
-.method-sources ul {
+.domain-grid {
     display: grid;
-    gap: 6px;
-    margin: 10px 0 0;
-    padding-left: 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 9px;
 }
 
-.method-sources li {
-    font-size: 0.9rem;
-}
-
-.method-status {
-    margin-top: 14px !important;
-    border-left: 3px solid #a15c00;
-    background: #fff6e5;
-    padding: 10px 11px;
+.domain-grid article {
+    min-height: 88px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #f8fafb;
+    padding: 10px;
 }
 
 /* ========================================================================== 
-   03A. RESPONSIVE LAYOUT
+   03A. FINAL SCORE AND SOURCES
    ========================================================================== */
 
-@media (max-width: 950px) {
-    .method-grid--four,
-    .method-grid--three {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+.method-footer {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 18px;
+    margin-top: 10px;
+    padding: 11px 12px;
+}
+
+.method-footer h2 {
+    margin-bottom: 4px;
+}
+
+.method-footer a {
+    font-weight: 700;
+}
+
+.method-status {
+    margin-top: 4px !important;
+    color: #6f4700 !important;
+}
+
+/* ========================================================================== 
+   04A. RESPONSIVE LAYOUT
+   ========================================================================== */
+
+@media (max-width: 1100px) {
+    .method-summary {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .method-summary__note {
+        grid-column: 1 / -1;
+        text-align: left;
+    }
+
+    .method-layout {
+        grid-template-columns: 1fr;
     }
 }
 
-@media (max-width: 600px) {
-    .method-grid--four,
-    .method-grid--three {
+@media (max-width: 700px) {
+    .method-summary,
+    .method-footer {
         grid-template-columns: 1fr;
+    }
+
+    .domain-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .domain-grid article {
+        min-height: 0;
     }
 }
