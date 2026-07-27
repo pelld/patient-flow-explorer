@@ -91,7 +91,22 @@ const statementCategoryById = {
     S77: "Admission avoidance & community care",
     S78: "Primary care & access",
     S79: "A&E staffing & operations",
-    S80: "Hospital flow & discharge"
+    S80: "Hospital flow & discharge",
+    S81: "Hospital flow & discharge",
+    S82: "Hospital flow & discharge",
+    S83: "Hospital flow & discharge",
+    S84: "Hospital flow & discharge",
+    S85: "Hospital flow & discharge",
+    S86: "Hospital flow & discharge",
+    S87: "Hospital flow & discharge",
+    S88: "Mental health & specialist pathways",
+    S89: "Mental health & specialist pathways",
+    S90: "Mental health & specialist pathways",
+    S91: "Hospital flow & discharge",
+    S92: "Hospital flow & discharge",
+    S93: "Hospital flow & discharge",
+    S94: "Hospital flow & discharge",
+    S95: "Hospital flow & discharge"
 };
 
 window.HEALTH_SYSTEM_STATEMENTS.forEach((statement) => {
