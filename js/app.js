@@ -3,21 +3,24 @@
    ========================================================================== */
 
 const statements = window.HEALTH_SYSTEM_STATEMENTS || [];
+const categoryOrder = window.HEALTH_SYSTEM_CATEGORIES || [];
 const statementsById = new Map(statements.map((item) => [item.id, item]));
 
 const statementGrid = document.querySelector("#statement-grid");
+const evidenceMap = document.querySelector("#evidence-map");
+const categoryLegend = document.querySelector("#category-legend");
 const evidenceTooltip = document.querySelector("#evidence-tooltip");
 const tooltipContent = document.querySelector("#tooltip-content");
 const tooltipClose = document.querySelector("#tooltip-close");
 
-let activeStatementCard = null;
+let activeEvidenceTrigger = null;
 
 /* ========================================================================== 
-   01A. SMALL TEXT HELPERS
+   01A. SMALL TEXT AND CLASS HELPERS
    ========================================================================== */
 
 function toClassName(value) {
-    return value.toLowerCase().replaceAll(" ", "-");
+    return value.toLowerCase().replaceAll("&", "and").replaceAll(/[^a-z0-9]+/g, "-").replaceAll(/(^-|-$)/g, "");
 }
 
 function createAssociationMarkup(value) {
@@ -48,7 +51,7 @@ function createDomainMarkup(label, value) {
 }
 
 /* ========================================================================== 
-   02A. STATEMENT CARD RENDERING
+   02A. CATEGORISED STATEMENT CARD RENDERING
    ========================================================================== */
 
 function createStatementCardMarkup(statement) {
@@ -63,12 +66,117 @@ function createStatementCardMarkup(statement) {
     `;
 }
 
+function createCategorySectionMarkup(category) {
+    const categoryStatements = statements.filter((statement) => statement.category === category);
+
+    if (categoryStatements.length === 0) {
+        return "";
+    }
+
+    return `
+        <section class="category-section" id="category-${toClassName(category)}">
+            <header class="category-heading">
+                <h2><span class="category-dot category-dot--${toClassName(category)}"></span>${category}</h2>
+                <span>${categoryStatements.length} statements</span>
+            </header>
+            <div class="statement-grid">
+                ${categoryStatements.map(createStatementCardMarkup).join("")}
+            </div>
+        </section>
+    `;
+}
+
 function renderStatementCards() {
-    statementGrid.innerHTML = statements.map(createStatementCardMarkup).join("");
+    statementGrid.innerHTML = categoryOrder.map(createCategorySectionMarkup).join("");
 }
 
 /* ========================================================================== 
-   03A. EVIDENCE TOOLTIP CONTENT
+   03A. EVIDENCE MAP POSITIONING
+   --------------------------------------------------------------------------
+   Unknown is shown near the left because there is no dependable observed
+   association. It is kept separate from "None" in the visible axis labels.
+   ========================================================================== */
+
+const associationPosition = {
+    None: 8,
+    Unknown: 22,
+    Weak: 38,
+    Moderate: 68,
+    Strong: 92
+};
+
+const evidencePosition = {
+    1: 90,
+    2: 66,
+    3: 34,
+    4: 10
+};
+
+const jitterOffsets = [
+    [0, 0], [-3, -2], [3, 2], [-5, 3], [5, -3], [-7, -1], [7, 1], [-2, 5], [2, -5]
+];
+
+function createMapPointMarkup(statement, duplicateIndex) {
+    const offset = jitterOffsets[duplicateIndex % jitterOffsets.length];
+    const x = Math.max(4, Math.min(96, associationPosition[statement.association] + offset[0]));
+    const y = Math.max(5, Math.min(95, evidencePosition[statement.evidenceScore] + offset[1]));
+    const categoryClass = toClassName(statement.category);
+
+    return `
+        <button
+            class="map-point map-point--${categoryClass}"
+            type="button"
+            data-statement-id="${statement.id}"
+            style="--point-x: ${x}%; --point-y: ${y}%;"
+            aria-label="${statement.id}: ${statement.statement}"
+            title="${statement.id}: ${statement.statement}">
+            ${statement.id.replace("S", "")}
+        </button>
+    `;
+}
+
+function renderEvidenceMap() {
+    const duplicateCounts = new Map();
+
+    const points = statements.map((statement) => {
+        const key = `${statement.association}-${statement.evidenceScore}`;
+        const duplicateIndex = duplicateCounts.get(key) || 0;
+        duplicateCounts.set(key, duplicateIndex + 1);
+        return createMapPointMarkup(statement, duplicateIndex);
+    }).join("");
+
+    evidenceMap.innerHTML = `
+        <div class="map-quadrant map-quadrant--top-left">Stronger evidence,<br>smaller or unclear effect</div>
+        <div class="map-quadrant map-quadrant--top-right">Stronger case<br>to consider action</div>
+        <div class="map-quadrant map-quadrant--bottom-left">Insufficient evidence<br>to decide</div>
+        <div class="map-quadrant map-quadrant--bottom-right">Promising — test<br>and evaluate</div>
+
+        <div class="map-axis map-axis--vertical"></div>
+        <div class="map-axis map-axis--horizontal"></div>
+        <div class="map-axis-title map-axis-title--y">Evidence strength</div>
+        <div class="map-axis-title map-axis-title--x">Association strength</div>
+
+        <div class="map-y-label map-y-label--high">4/4 High</div>
+        <div class="map-y-label map-y-label--moderate">3/4 Moderate</div>
+        <div class="map-y-label map-y-label--low">2/4 Low</div>
+        <div class="map-y-label map-y-label--very-low">1/4 Very low</div>
+
+        <div class="map-x-label map-x-label--none">None</div>
+        <div class="map-x-label map-x-label--unknown">Unknown</div>
+        <div class="map-x-label map-x-label--weak">Weak</div>
+        <div class="map-x-label map-x-label--moderate">Moderate</div>
+        <div class="map-x-label map-x-label--strong">Strong</div>
+
+        ${points}
+    `;
+
+    categoryLegend.innerHTML = categoryOrder.map((category) => `
+        <span><span class="category-dot category-dot--${toClassName(category)}"></span>${category}</span>
+    `).join("");
+}
+
+/* ========================================================================== 
+   04A. EVIDENCE TOOLTIP CONTENT
    ========================================================================== */
 
 function createSourceMarkup(source) {
@@ -76,14 +184,15 @@ function createSourceMarkup(source) {
 }
 
 function createEvidenceTooltipMarkup(statement) {
-    const sourcesMarkup = statement.sources.length > 0
-        ? `<ul class="tooltip-sources">${statement.sources.map(createSourceMarkup).join("")}</ul>`
+    const sources = statement.sources || [];
+    const sourcesMarkup = sources.length > 0
+        ? `<ul class="tooltip-sources">${sources.map(createSourceMarkup).join("")}</ul>`
         : `<p class="tooltip-source--missing">No direct source identified yet.</p>`;
 
     const publicationBias = statement.publicationBias || "Not assessed separately in this initial rapid review.";
 
     return `
-        <p class="tooltip-kicker">${statement.id} · Adapted GRADE</p>
+        <p class="tooltip-kicker">${statement.id} · ${statement.category} · Adapted GRADE</p>
         <h2 id="tooltip-title">${statement.statement}</h2>
 
         <div class="tooltip-scores">
@@ -113,72 +222,73 @@ function createEvidenceTooltipMarkup(statement) {
 }
 
 /* ========================================================================== 
-   03B. EVIDENCE TOOLTIP POSITIONING
+   04B. EVIDENCE TOOLTIP POSITIONING
    ========================================================================== */
 
-function positionEvidenceTooltip(card) {
-    const cardBox = card.getBoundingClientRect();
+function positionEvidenceTooltip(trigger) {
+    const triggerBox = trigger.getBoundingClientRect();
     const tooltipBox = evidenceTooltip.getBoundingClientRect();
     const pagePadding = 12;
     const gap = 9;
 
-    let left = cardBox.left + (cardBox.width / 2) - (tooltipBox.width / 2);
+    let left = triggerBox.left + (triggerBox.width / 2) - (tooltipBox.width / 2);
     left = Math.max(pagePadding, Math.min(left, window.innerWidth - tooltipBox.width - pagePadding));
 
-    let top = cardBox.bottom + gap;
+    let top = triggerBox.bottom + gap;
 
     if (top + tooltipBox.height > window.innerHeight - pagePadding) {
-        top = cardBox.top - tooltipBox.height - gap;
+        top = triggerBox.top - tooltipBox.height - gap;
     }
 
-    top = Math.max(pagePadding, top);
-
     evidenceTooltip.style.left = `${left}px`;
-    evidenceTooltip.style.top = `${top}px`;
+    evidenceTooltip.style.top = `${Math.max(pagePadding, top)}px`;
 }
 
 /* ========================================================================== 
-   03C. EVIDENCE TOOLTIP OPEN AND CLOSE
+   04C. EVIDENCE TOOLTIP OPEN AND CLOSE
    ========================================================================== */
 
-function showEvidenceTooltip(card) {
-    const statement = statementsById.get(card.dataset.statementId);
+function showEvidenceTooltip(trigger) {
+    const statement = statementsById.get(trigger.dataset.statementId);
 
     if (!statement) {
         return;
     }
 
-    activeStatementCard = card;
+    activeEvidenceTrigger = trigger;
     tooltipContent.innerHTML = createEvidenceTooltipMarkup(statement);
     evidenceTooltip.hidden = false;
-    positionEvidenceTooltip(card);
+    positionEvidenceTooltip(trigger);
 }
 
 function hideEvidenceTooltip() {
     evidenceTooltip.hidden = true;
-    activeStatementCard = null;
+    activeEvidenceTrigger = null;
 }
 
 /* ========================================================================== 
-   04A. EVENT HANDLERS
+   05A. SHARED CLICK HANDLER
    ========================================================================== */
 
-statementGrid.addEventListener("click", (event) => {
-    const card = event.target.closest("[data-statement-id]");
+function handleEvidenceTriggerClick(event) {
+    const trigger = event.target.closest("[data-statement-id]");
 
-    if (!card) {
+    if (!trigger) {
         return;
     }
 
     event.stopPropagation();
 
-    if (activeStatementCard === card && !evidenceTooltip.hidden) {
+    if (activeEvidenceTrigger === trigger && !evidenceTooltip.hidden) {
         hideEvidenceTooltip();
         return;
     }
 
-    showEvidenceTooltip(card);
-});
+    showEvidenceTooltip(trigger);
+}
+
+statementGrid.addEventListener("click", handleEvidenceTriggerClick);
+evidenceMap.addEventListener("click", handleEvidenceTriggerClick);
 
 tooltipClose.addEventListener("click", hideEvidenceTooltip);
 evidenceTooltip.addEventListener("click", (event) => event.stopPropagation());
@@ -191,13 +301,14 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("resize", () => {
-    if (activeStatementCard && !evidenceTooltip.hidden) {
-        positionEvidenceTooltip(activeStatementCard);
+    if (activeEvidenceTrigger && !evidenceTooltip.hidden) {
+        positionEvidenceTooltip(activeEvidenceTrigger);
     }
 });
 
 /* ========================================================================== 
-   05A. INITIAL PAGE RENDER
+   06A. INITIAL PAGE RENDER
    ========================================================================== */
 
+renderEvidenceMap();
 renderStatementCards();
