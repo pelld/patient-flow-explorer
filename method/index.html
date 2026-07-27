@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
+    <!-- ===================================================================
+         00A. PAGE METADATA
+         =================================================================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="How Health System Levers rates health-services evidence.">
@@ -9,12 +12,16 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- ===================================================================
+         00B. COMPACT METHOD PAGE
+         =================================================================== -->
     <main class="main-content method-page">
-        <header class="page-header">
+        <header class="page-header method-header">
             <div>
                 <h1>How the scores work</h1>
                 <p>An adapted GRADE approach for health-services evidence.</p>
             </div>
+
             <nav class="page-nav" aria-label="Page navigation">
                 <a href="../">Evidence statements</a>
                 <span class="page-nav__current">How scores work</span>
@@ -22,53 +29,73 @@
             </nav>
         </header>
 
-        <section class="method-panel">
-            <h2>What the evidence score means</h2>
-            <p>The score shows how confident we are that the reported relationship is reliable enough to inform a decision. It does not say whether an intervention is a good idea.</p>
-            <p>GRADE was developed mainly for clinical intervention evidence. This site adapts its logic for routine data, natural experiments and other health-services research.</p>
+        <!-- ===============================================================
+             01A. PURPOSE AND IMPORTANT DISTINCTION
+             =============================================================== -->
+        <section class="method-summary">
+            <p><strong>Evidence score:</strong> how confident we are that the reported relationship is reliable.</p>
+            <p><strong>Association:</strong> how strong the observed relationship appears to be.</p>
+            <p class="method-summary__note">This adapts GRADE for routine data, natural experiments and other health-services research.</p>
         </section>
 
-        <section class="method-panel">
-            <h2>1. Start from the strongest study design</h2>
-            <div class="method-grid method-grid--four">
-                <article><div class="method-score method-score--high">4/4</div><h3>High</h3><p>Randomised evidence or several strong causal evaluations giving consistent results.</p></article>
-                <article><div class="method-score method-score--moderate">3/4</div><h3>Moderate</h3><p>Controlled quasi-experimental evidence, such as a strong difference-in-differences or interrupted time series.</p></article>
-                <article><div class="method-score method-score--low">2/4</div><h3>Low</h3><p>Adjusted observational, panel, ecological or analytical cross-sectional evidence.</p></article>
-                <article><div class="method-score method-score--very-low">1/4</div><h3>Very low</h3><p>Uncontrolled before-and-after studies, small surveys, local descriptive studies or expert opinion.</p></article>
+        <!-- ===============================================================
+             02A. STARTING DESIGN AND REVIEW DOMAINS
+             =============================================================== -->
+        <div class="method-layout">
+            <section class="method-panel method-panel--design">
+                <h2>1. Start from the strongest study design</h2>
+
+                <div class="design-list">
+                    <article>
+                        <div class="method-score method-score--high">4/4</div>
+                        <div><h3>High</h3><p>Randomised evidence or several strong causal evaluations with consistent results.</p></div>
+                    </article>
+
+                    <article>
+                        <div class="method-score method-score--moderate">3/4</div>
+                        <div><h3>Moderate</h3><p>Controlled quasi-experimental evidence, such as difference-in-differences or interrupted time series.</p></div>
+                    </article>
+
+                    <article>
+                        <div class="method-score method-score--low">2/4</div>
+                        <div><h3>Low</h3><p>Adjusted observational, panel, ecological or analytical cross-sectional evidence.</p></div>
+                    </article>
+
+                    <article>
+                        <div class="method-score method-score--very-low">1/4</div>
+                        <div><h3>Very low</h3><p>Uncontrolled before-and-after studies, small surveys, descriptive studies or expert opinion.</p></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="method-panel method-panel--domains">
+                <h2>2. Check six domains</h2>
+
+                <div class="domain-grid">
+                    <article><h3>Risk of bias</h3><p>Could confounding, reverse causation, selection or recall bias explain the result?</p></article>
+                    <article><h3>Consistency</h3><p>Do independent studies using different methods agree?</p></article>
+                    <article><h3>Precision</h3><p>Can the estimate distinguish a useful effect from little or no effect?</p></article>
+                    <article><h3>Directness</h3><p>Does it measure the actual NHS population, intervention and outcome?</p></article>
+                    <article><h3>Publication bias</h3><p>Could published studies over-represent positive results?</p></article>
+                    <article><h3>Other factors</h3><p>Large effects, dose-response or agreement across methods may increase confidence.</p></article>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===============================================================
+             03A. FINAL RATING AND SOURCES
+             =============================================================== -->
+        <section class="method-footer">
+            <div>
+                <h2>3. Reach the final score</h2>
+                <p>Serious concerns lower the score. Convincing additional evidence may raise it. A systematic review does not score highly when the studies inside it are weak.</p>
             </div>
-        </section>
 
-        <section class="method-panel">
-            <h2>2. Check six domains</h2>
-            <div class="method-grid method-grid--three">
-                <article><h3>Risk of bias</h3><p>Could confounding, reverse causation, selection or recall bias explain the result?</p></article>
-                <article><h3>Consistency</h3><p>Do independent studies using different data and methods agree?</p></article>
-                <article><h3>Precision</h3><p>Is the estimate precise enough to distinguish a useful effect from little or no effect?</p></article>
-                <article><h3>Directness</h3><p>Does the evidence measure the actual NHS population, intervention and outcome?</p></article>
-                <article><h3>Publication bias</h3><p>Could published research over-represent positive or unusual results?</p></article>
-                <article><h3>Other factors</h3><p>A large effect, dose-response pattern or agreement across independent methods may raise confidence.</p></article>
+            <div>
+                <h2>Framework</h2>
+                <p><a href="https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-14" target="_blank" rel="noopener noreferrer">GRADE</a> · <a href="https://www.bmj.com/content/355/bmj.i4919" target="_blank" rel="noopener noreferrer">ROBINS-I</a> · <a href="https://www.cdc.gov/acip-grade-handbook/hcp/chapter-9-domains-increasing-ones-certainty-in-the-evidence/index.html" target="_blank" rel="noopener noreferrer">GRADE upgrades</a></p>
+                <p class="method-status"><strong>Status:</strong> initial rapid evidence review, not a completed systematic review.</p>
             </div>
-        </section>
-
-        <section class="method-panel">
-            <h2>3. Reach the final score</h2>
-            <p>A serious concern normally lowers the score by one level. A very serious concern may lower it by two. Convincing additional evidence may raise it by one.</p>
-            <p>A systematic review does not automatically score highly. The score depends on the quality and consistency of the studies inside it.</p>
-        </section>
-
-        <section class="method-panel">
-            <h2>Association stays separate</h2>
-            <p>The association label describes the observed relationship: strong, moderate, weak, none or unknown. The evidence score describes how much confidence to place in that label.</p>
-        </section>
-
-        <section class="method-panel method-sources">
-            <h2>Framework sources</h2>
-            <ul>
-                <li><a href="https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-14" target="_blank" rel="noopener noreferrer">Cochrane Handbook: grading certainty of evidence ↗</a></li>
-                <li><a href="https://www.bmj.com/content/355/bmj.i4919" target="_blank" rel="noopener noreferrer">ROBINS-I: risk of bias in non-randomised studies ↗</a></li>
-                <li><a href="https://www.cdc.gov/acip-grade-handbook/hcp/chapter-9-domains-increasing-ones-certainty-in-the-evidence/index.html" target="_blank" rel="noopener noreferrer">GRADE domains that may increase certainty ↗</a></li>
-            </ul>
-            <p class="method-status"><strong>Status:</strong> this is an initial rapid evidence review, not a completed systematic review.</p>
         </section>
     </main>
 </body>
