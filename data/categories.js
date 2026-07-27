@@ -1,0 +1,54 @@
+/* ========================================================================== 
+   00A. DOMAIN ORDER AND STATEMENT MAPPING
+   ========================================================================== */
+
+window.HEALTH_SYSTEM_CATEGORIES = [
+    "Primary care & access",
+    "Ambulance & pre-hospital care",
+    "A&E staffing & operations",
+    "Hospital flow & discharge",
+    "Admission avoidance & community care",
+    "Mental health & specialist pathways"
+];
+
+const statementCategoryById = {
+    S01: "Hospital flow & discharge",
+    S02: "Hospital flow & discharge",
+    S03: "Hospital flow & discharge",
+    S04: "Primary care & access",
+    S05: "Primary care & access",
+    S06: "Primary care & access",
+    S07: "Primary care & access",
+    S08: "Primary care & access",
+    S09: "A&E staffing & operations",
+    S10: "Primary care & access",
+    S11: "Primary care & access",
+    S12: "A&E staffing & operations",
+    S13: "Ambulance & pre-hospital care",
+    S14: "A&E staffing & operations",
+    S15: "A&E staffing & operations",
+    S16: "A&E staffing & operations",
+    S17: "Hospital flow & discharge",
+    S18: "Admission avoidance & community care",
+    S19: "Admission avoidance & community care",
+    S20: "Primary care & access",
+    S21: "Ambulance & pre-hospital care",
+    S22: "Admission avoidance & community care",
+    S23: "Admission avoidance & community care",
+    S24: "A&E staffing & operations",
+    S25: "A&E staffing & operations",
+    S26: "Primary care & access",
+    S27: "Primary care & access",
+    S28: "Admission avoidance & community care",
+    S29: "Admission avoidance & community care",
+    S30: "Hospital flow & discharge",
+    S31: "Mental health & specialist pathways",
+    S32: "Ambulance & pre-hospital care",
+    S33: "Mental health & specialist pathways",
+    S34: "A&E staffing & operations",
+    S35: "Admission avoidance & community care"
+};
+
+window.HEALTH_SYSTEM_STATEMENTS.forEach((statement) => {
+    statement.category = statementCategoryById[statement.id] || "Other";
+});
