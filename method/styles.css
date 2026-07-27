@@ -1,0 +1,131 @@
+/* ========================================================================== 
+   00A. METHOD PAGE LAYOUT
+   ========================================================================== */
+
+.method-page {
+    width: min(1320px, 100%);
+}
+
+.method-panel {
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--panel-bg);
+    box-shadow: var(--shadow);
+    padding: 18px;
+}
+
+.method-panel h2 {
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+}
+
+.method-panel > p {
+    max-width: 950px;
+    margin: 7px 0 0;
+    color: var(--muted);
+}
+
+/* ========================================================================== 
+   01A. SCORE AND DOMAIN GRIDS
+   ========================================================================== */
+
+.method-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.method-grid--four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.method-grid--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.method-grid article {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #f8fafb;
+    padding: 13px;
+}
+
+.method-grid h3 {
+    margin: 8px 0 4px;
+    font-size: 0.98rem;
+}
+
+.method-grid p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.86rem;
+}
+
+.method-score {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 5px 9px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.method-score--high {
+    background: var(--evidence-high-bg);
+    color: var(--evidence-high-text);
+}
+
+.method-score--moderate {
+    background: var(--evidence-moderate-bg);
+    color: var(--evidence-moderate-text);
+}
+
+.method-score--low {
+    background: var(--evidence-low-bg);
+    color: var(--evidence-low-text);
+}
+
+.method-score--very-low {
+    background: var(--evidence-very-low-bg);
+    color: var(--evidence-very-low-text);
+}
+
+/* ========================================================================== 
+   02A. SOURCES AND STATUS
+   ========================================================================== */
+
+.method-sources ul {
+    display: grid;
+    gap: 6px;
+    margin: 10px 0 0;
+    padding-left: 20px;
+}
+
+.method-sources li {
+    font-size: 0.9rem;
+}
+
+.method-status {
+    margin-top: 14px !important;
+    border-left: 3px solid #a15c00;
+    background: #fff6e5;
+    padding: 10px 11px;
+}
+
+/* ========================================================================== 
+   03A. RESPONSIVE LAYOUT
+   ========================================================================== */
+
+@media (max-width: 950px) {
+    .method-grid--four,
+    .method-grid--three {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .method-grid--four,
+    .method-grid--three {
+        grid-template-columns: 1fr;
+    }
+}
