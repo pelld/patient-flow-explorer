@@ -4,6 +4,7 @@
 
 const evidenceRegister = window.HEALTH_SYSTEM_EVIDENCE || [];
 const modelInputs = window.HEALTH_SYSTEM_MODEL || {};
+const evidenceById = new Map(evidenceRegister.map((item) => [item.id, item]));
 
 const gpChangeSlider = document.querySelector("#gp-change");
 const gpChangeValue = document.querySelector("#gp-change-value");
@@ -11,8 +12,11 @@ const outputExtraGp = document.querySelector("#output-extra-gp");
 const outputMinorAe = document.querySelector("#output-minor-ae");
 const outputTotalAe = document.querySelector("#output-total-ae");
 const outputWaits = document.querySelector("#output-waits");
-const evidenceList = document.querySelector("#evidence-list");
-const evidenceSummary = document.querySelector("#evidence-summary");
+const evidenceTooltip = document.querySelector("#evidence-tooltip");
+const tooltipContent = document.querySelector("#tooltip-content");
+const tooltipClose = document.querySelector("#tooltip-close");
+
+let activeEvidenceButton = null;
 
 /* ========================================================================== 
    00B. NUMBER FORMATTING
@@ -30,11 +34,10 @@ function formatPercentage(value) {
 }
 
 /* ========================================================================== 
-   00C. PROVISIONAL GP-TO-A&E MODEL
+   01A. PROVISIONAL GP-TO-A&E MODEL
    --------------------------------------------------------------------------
-   The model intentionally stops before producing a numerical A&E wait effect.
-   The evidence supports substitution at the margin, but not a general causal
-   coefficient from total A&E arrivals to waiting-time performance.
+   This is an illustrative calculation. It estimates changes in minor and total
+   A&E visits, but deliberately stops before inventing an A&E waiting-time effect.
    ========================================================================== */
 
 function calculateScenario(gpIncreasePercentage) {
@@ -42,23 +45,18 @@ function calculateScenario(gpIncreasePercentage) {
     const usedAdditionalAppointments = additionalAppointments * modelInputs.gpAppointmentUtilisation;
     const uncappedMinorAeAvoided = usedAdditionalAppointments / modelInputs.additionalGpAppointmentsPerMinorAeAvoided;
     const maximumMinorAeAvoided = modelInputs.baselineMinorAeAttendances * modelInputs.maximumSubstitutableMinorAeShare;
-    const centralMinorAeAvoided = Math.min(uncappedMinorAeAvoided, maximumMinorAeAvoided);
-
-    const lowMinorAeAvoided = centralMinorAeAvoided * 0.50;
-    const highMinorAeAvoided = Math.min(centralMinorAeAvoided * 1.50, maximumMinorAeAvoided);
-    const totalAeReductionPercentage = (centralMinorAeAvoided / modelInputs.baselineTotalAeAttendances) * 100;
+    const minorAeAvoided = Math.min(uncappedMinorAeAvoided, maximumMinorAeAvoided);
+    const totalAeReductionPercentage = (minorAeAvoided / modelInputs.baselineTotalAeAttendances) * 100;
 
     return {
         additionalAppointments,
-        centralMinorAeAvoided,
-        lowMinorAeAvoided,
-        highMinorAeAvoided,
+        minorAeAvoided,
         totalAeReductionPercentage
     };
 }
 
 /* ========================================================================== 
-   00D. SCENARIO OUTPUTS
+   01B. SCENARIO OUTPUTS
    ========================================================================== */
 
 function updateScenario() {
@@ -67,66 +65,115 @@ function updateScenario() {
 
     gpChangeValue.textContent = formatPercentage(gpIncreasePercentage);
     outputExtraGp.textContent = `+${formatNumber(scenario.additionalAppointments)}`;
-    outputMinorAe.textContent = `−${formatNumber(scenario.centralMinorAeAvoided)} (${formatNumber(scenario.lowMinorAeAvoided)}–${formatNumber(scenario.highMinorAeAvoided)})`;
-    outputTotalAe.textContent = `−${formatPercentage(scenario.totalAeReductionPercentage)}`;
-    outputWaits.textContent = "Not yet quantified";
+    outputMinorAe.textContent = scenario.minorAeAvoided === 0 ? "No change" : `About ${formatNumber(scenario.minorAeAvoided)} fewer`;
+    outputTotalAe.textContent = scenario.totalAeReductionPercentage === 0 ? "No change" : `About ${formatPercentage(scenario.totalAeReductionPercentage)} fewer`;
+    outputWaits.textContent = "Not estimated yet";
 }
 
 /* ========================================================================== 
-   00E. EVIDENCE SIDE PANEL
+   02A. EVIDENCE TOOLTIP CONTENT
    ========================================================================== */
 
-function createEvidenceCard(evidence) {
+function createEvidenceTooltipMarkup(evidence) {
     const sourceMarkup = evidence.sourceUrl
-        ? `<a class="evidence-source" href="${evidence.sourceUrl}" target="_blank" rel="noopener noreferrer">Read source ↗</a>`
-        : `<span class="evidence-source evidence-source--missing">Source still required</span>`;
+        ? `<a class="tooltip-source" href="${evidence.sourceUrl}" target="_blank" rel="noopener noreferrer">Read the study ↗</a>`
+        : `<span class="tooltip-source tooltip-source--missing">Local evidence still needed</span>`;
 
     return `
-        <article class="evidence-card" id="evidence-${evidence.id}">
-            <div class="evidence-card__topline">
-                <span class="evidence-id">${evidence.id}</span>
-                <span class="confidence confidence--${evidence.confidence.toLowerCase()}">${evidence.confidence} confidence</span>
-            </div>
-            <h3>${evidence.relationship}</h3>
-            <p class="evidence-type">${evidence.evidenceType}</p>
-            <p>${evidence.headlineEstimate}</p>
-            <p><strong>Use in model:</strong> ${evidence.modelUse}</p>
-            <p class="evidence-notes">${evidence.notes}</p>
-            ${sourceMarkup}
-        </article>
+        <p class="tooltip-evidence-id">${evidence.id} · ${evidence.confidence} confidence</p>
+        <h3>${evidence.title}</h3>
+        <p>${evidence.estimate}</p>
+        <p><strong>What this means here:</strong> ${evidence.meaning}</p>
+        ${sourceMarkup}
     `;
 }
 
-function renderEvidenceRegister() {
-    evidenceSummary.textContent = `${evidenceRegister.length} evidence records: ${evidenceRegister.filter((item) => item.sourceUrl).length} sourced and ${evidenceRegister.filter((item) => !item.sourceUrl).length} still requiring evidence.`;
-    evidenceList.innerHTML = evidenceRegister.map(createEvidenceCard).join("");
-}
+/* ========================================================================== 
+   02B. EVIDENCE TOOLTIP POSITIONING
+   ========================================================================== */
 
-function focusEvidenceRecord(evidenceId) {
-    const target = document.querySelector(`#evidence-${evidenceId}`);
+function positionEvidenceTooltip(button) {
+    const buttonBox = button.getBoundingClientRect();
+    const tooltipBox = evidenceTooltip.getBoundingClientRect();
+    const pagePadding = 12;
+    const gap = 8;
 
-    if (!target) {
-        return;
+    let left = buttonBox.left + (buttonBox.width / 2) - (tooltipBox.width / 2);
+    left = Math.max(pagePadding, Math.min(left, window.innerWidth - tooltipBox.width - pagePadding));
+
+    let top = buttonBox.bottom + gap;
+
+    if (top + tooltipBox.height > window.innerHeight - pagePadding) {
+        top = buttonBox.top - tooltipBox.height - gap;
     }
 
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-    target.classList.add("evidence-card--highlighted");
-    window.setTimeout(() => target.classList.remove("evidence-card--highlighted"), 1400);
+    top = Math.max(pagePadding, top);
+
+    evidenceTooltip.style.left = `${left}px`;
+    evidenceTooltip.style.top = `${top}px`;
 }
 
 /* ========================================================================== 
-   00F. EVENT HANDLERS
+   02C. EVIDENCE TOOLTIP OPEN AND CLOSE
+   ========================================================================== */
+
+function showEvidenceTooltip(button) {
+    const evidence = evidenceById.get(button.dataset.evidenceId);
+
+    if (!evidence) {
+        return;
+    }
+
+    activeEvidenceButton = button;
+    tooltipContent.innerHTML = createEvidenceTooltipMarkup(evidence);
+    evidenceTooltip.hidden = false;
+    positionEvidenceTooltip(button);
+}
+
+function hideEvidenceTooltip() {
+    evidenceTooltip.hidden = true;
+    activeEvidenceButton = null;
+}
+
+/* ========================================================================== 
+   03A. EVENT HANDLERS
    ========================================================================== */
 
 gpChangeSlider.addEventListener("input", updateScenario);
 
 document.querySelectorAll("[data-evidence-id]").forEach((button) => {
-    button.addEventListener("click", () => focusEvidenceRecord(button.dataset.evidenceId));
+    button.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        if (activeEvidenceButton === button && !evidenceTooltip.hidden) {
+            hideEvidenceTooltip();
+            return;
+        }
+
+        showEvidenceTooltip(button);
+    });
+});
+
+tooltipClose.addEventListener("click", hideEvidenceTooltip);
+
+evidenceTooltip.addEventListener("click", (event) => event.stopPropagation());
+
+document.addEventListener("click", hideEvidenceTooltip);
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        hideEvidenceTooltip();
+    }
+});
+
+window.addEventListener("resize", () => {
+    if (activeEvidenceButton && !evidenceTooltip.hidden) {
+        positionEvidenceTooltip(activeEvidenceButton);
+    }
 });
 
 /* ========================================================================== 
-   00G. INITIAL PAGE RENDER
+   04A. INITIAL PAGE RENDER
    ========================================================================== */
 
-renderEvidenceRegister();
 updateScenario();
