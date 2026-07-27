@@ -29,13 +29,29 @@
         </header>
 
         <!-- ===============================================================
-             01A. EVIDENCE STATEMENT GRID
+             01A. ASSOCIATION AND EVIDENCE MAP
              =============================================================== -->
-        <section class="statement-grid" id="statement-grid" aria-label="Health service evidence statements"></section>
+        <section class="evidence-map-panel" aria-labelledby="evidence-map-title">
+            <div class="evidence-map-heading">
+                <div>
+                    <h2 id="evidence-map-title">Evidence map</h2>
+                    <p>Further right means a stronger reported association. Higher means stronger evidence.</p>
+                </div>
+                <p class="evidence-map-caution">Top right is a stronger case to consider action — not an automatic instruction. Cost, feasibility and possible harms still matter.</p>
+            </div>
+
+            <div class="evidence-map" id="evidence-map" aria-label="Chart of association strength against evidence strength"></div>
+            <div class="category-legend" id="category-legend" aria-label="Domain colours"></div>
+        </section>
+
+        <!-- ===============================================================
+             02A. CATEGORISED EVIDENCE STATEMENTS
+             =============================================================== -->
+        <div class="category-list" id="statement-grid" aria-label="Health service evidence statements"></div>
     </main>
 
     <!-- ===================================================================
-         02A. SHARED EVIDENCE TOOLTIP
+         03A. SHARED EVIDENCE TOOLTIP
          =================================================================== -->
     <div class="evidence-tooltip" id="evidence-tooltip" role="dialog" aria-modal="false" aria-labelledby="tooltip-title" hidden>
         <button class="tooltip-close" id="tooltip-close" type="button" aria-label="Close evidence">×</button>
@@ -43,10 +59,12 @@
     </div>
 
     <!-- ===================================================================
-         03A. DATA AND APPLICATION SCRIPTS
+         04A. DATA AND APPLICATION SCRIPTS
          =================================================================== -->
     <script src="data/evidence.js"></script>
     <script src="data/evidence-more.js"></script>
+    <script src="data/evidence-more-2.js"></script>
+    <script src="data/categories.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
