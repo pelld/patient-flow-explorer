@@ -46,7 +46,17 @@ const statementCategoryById = {
     S32: "Ambulance & pre-hospital care",
     S33: "Mental health & specialist pathways",
     S34: "A&E staffing & operations",
-    S35: "Admission avoidance & community care"
+    S35: "Admission avoidance & community care",
+    S36: "Primary care & access",
+    S37: "Primary care & access",
+    S38: "Admission avoidance & community care",
+    S39: "Admission avoidance & community care",
+    S40: "Admission avoidance & community care",
+    S41: "Mental health & specialist pathways",
+    S42: "Hospital flow & discharge",
+    S43: "Admission avoidance & community care",
+    S44: "Admission avoidance & community care",
+    S45: "A&E staffing & operations"
 };
 
 window.HEALTH_SYSTEM_STATEMENTS.forEach((statement) => {
