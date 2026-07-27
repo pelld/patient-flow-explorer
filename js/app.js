@@ -20,12 +20,30 @@ function toClassName(value) {
     return value.toLowerCase().replaceAll(" ", "-");
 }
 
-function createScoreMarkup(label, value, type) {
+function createAssociationMarkup(value) {
     return `
-        <span class="score score--${type}-${toClassName(value)}">
-            <span>${label}</span>
+        <span class="score score--association-${toClassName(value)}">
+            <span>Association</span>
             <strong>${value}</strong>
         </span>
+    `;
+}
+
+function createEvidenceMarkup(statement) {
+    return `
+        <span class="score score--evidence-${toClassName(statement.evidence)}">
+            <span>Evidence</span>
+            <strong>${statement.evidenceScore}/4 · ${statement.evidence}</strong>
+        </span>
+    `;
+}
+
+function createDomainMarkup(label, value) {
+    return `
+        <div>
+            <dt>${label}</dt>
+            <dd>${value}</dd>
+        </div>
     `;
 }
 
@@ -38,8 +56,8 @@ function createStatementCardMarkup(statement) {
         <button class="statement-card" type="button" data-statement-id="${statement.id}" aria-label="Open evidence for: ${statement.statement}">
             <div class="statement-card__text">${statement.statement}</div>
             <div class="statement-card__scores">
-                ${createScoreMarkup("Association", statement.association, "association")}
-                ${createScoreMarkup("Evidence", statement.evidence, "evidence")}
+                ${createAssociationMarkup(statement.association)}
+                ${createEvidenceMarkup(statement)}
             </div>
         </button>
     `;
@@ -53,44 +71,41 @@ function renderStatementCards() {
    03A. EVIDENCE TOOLTIP CONTENT
    ========================================================================== */
 
+function createSourceMarkup(source) {
+    return `<li><a href="${source.url}" target="_blank" rel="noopener noreferrer">${source.title} ↗</a></li>`;
+}
+
 function createEvidenceTooltipMarkup(statement) {
-    const sourceMarkup = statement.sourceUrl
-        ? `<a class="tooltip-source" href="${statement.sourceUrl}" target="_blank" rel="noopener noreferrer">Read the source ↗</a>`
-        : `<span class="tooltip-source tooltip-source--missing">No direct source identified yet</span>`;
+    const sourcesMarkup = statement.sources.length > 0
+        ? `<ul class="tooltip-sources">${statement.sources.map(createSourceMarkup).join("")}</ul>`
+        : `<p class="tooltip-source--missing">No direct source identified yet.</p>`;
 
     return `
-        <p class="tooltip-kicker">${statement.id}</p>
+        <p class="tooltip-kicker">${statement.id} · Adapted GRADE</p>
         <h2 id="tooltip-title">${statement.statement}</h2>
 
         <div class="tooltip-scores">
-            ${createScoreMarkup("Association", statement.association, "association")}
-            ${createScoreMarkup("Evidence", statement.evidence, "evidence")}
+            ${createAssociationMarkup(statement.association)}
+            ${createEvidenceMarkup(statement)}
         </div>
 
+        <p class="tooltip-direction"><strong>Direction:</strong> ${statement.direction}</p>
+        <p class="tooltip-finding">${statement.finding}</p>
+
         <dl class="tooltip-details">
-            <div>
-                <dt>What was found</dt>
-                <dd>${statement.finding}</dd>
-            </div>
-            <div>
-                <dt>Evidence available</dt>
-                <dd>${statement.evidenceAvailable}</dd>
-            </div>
-            <div>
-                <dt>Sample</dt>
-                <dd>${statement.sample}</dd>
-            </div>
-            <div>
-                <dt>Uncertainty</dt>
-                <dd>${statement.uncertainty}</dd>
-            </div>
-            <div>
-                <dt>Replication</dt>
-                <dd>${statement.replication}</dd>
-            </div>
+            ${createDomainMarkup("Design", statement.design)}
+            ${createDomainMarkup("Risk of bias", statement.riskOfBias)}
+            ${createDomainMarkup("Consistency", statement.consistency)}
+            ${createDomainMarkup("Precision", statement.precision)}
+            ${createDomainMarkup("Directness", statement.directness)}
+            ${createDomainMarkup("Other factors", statement.otherFactors)}
+            ${createDomainMarkup("Why this rating?", statement.ratingReason)}
         </dl>
 
-        ${sourceMarkup}
+        <div class="tooltip-source-block">
+            <h3>Sources</h3>
+            ${sourcesMarkup}
+        </div>
     `;
 }
 
@@ -163,9 +178,7 @@ statementGrid.addEventListener("click", (event) => {
 });
 
 tooltipClose.addEventListener("click", hideEvidenceTooltip);
-
 evidenceTooltip.addEventListener("click", (event) => event.stopPropagation());
-
 document.addEventListener("click", hideEvidenceTooltip);
 
 document.addEventListener("keydown", (event) => {
