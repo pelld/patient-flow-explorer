@@ -20,7 +20,7 @@ let activeEvidenceTrigger = null;
    ========================================================================== */
 
 function toClassName(value) {
-    return value.toLowerCase().replaceAll("&", "and").replaceAll(/[^a-z0-9]+/g, "-").replaceAll(/(^-|-$)/g, "");
+    return value.toLowerCase().replaceAll("&", " and ").replaceAll(/[^a-z0-9]+/g, "-").replaceAll(/(^-|-$)/g, "");
 }
 
 function createAssociationMarkup(value) {
