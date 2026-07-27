@@ -280,8 +280,8 @@ a {
 .evidence-tooltip {
     position: fixed;
     z-index: 1000;
-    width: min(430px, calc(100vw - 24px));
-    max-height: min(620px, calc(100vh - 24px));
+    width: min(520px, calc(100vw - 24px));
+    max-height: calc(100vh - 24px);
     overflow-y: auto;
     border: 1px solid #8fa1af;
     border-radius: 14px;
@@ -325,18 +325,31 @@ a {
     display: flex;
     flex-wrap: wrap;
     gap: 7px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
+}
+
+.tooltip-direction {
+    margin: 0 0 8px;
+    font-size: 0.86rem;
+}
+
+.tooltip-finding {
+    margin: 0 0 14px;
+    border-left: 3px solid var(--accent);
+    background: #f1f7fc;
+    padding: 10px 11px;
+    font-size: 0.9rem;
 }
 
 .tooltip-details {
     display: grid;
-    gap: 10px;
+    gap: 9px;
     margin: 0;
 }
 
 .tooltip-details div {
     border-top: 1px solid var(--border);
-    padding-top: 9px;
+    padding-top: 8px;
 }
 
 .tooltip-details dt {
@@ -348,14 +361,29 @@ a {
 .tooltip-details dd {
     margin: 0;
     color: var(--muted);
-    font-size: 0.86rem;
+    font-size: 0.84rem;
 }
 
-.tooltip-source {
-    display: inline-block;
+.tooltip-source-block {
     margin-top: 14px;
-    font-size: 0.86rem;
-    font-weight: 700;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+}
+
+.tooltip-source-block h3 {
+    margin: 0 0 6px;
+    font-size: 0.85rem;
+}
+
+.tooltip-sources {
+    display: grid;
+    gap: 5px;
+    margin: 0;
+    padding-left: 19px;
+}
+
+.tooltip-sources li {
+    font-size: 0.82rem;
 }
 
 .tooltip-source--missing {
