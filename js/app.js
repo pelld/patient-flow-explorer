@@ -2,109 +2,115 @@
    00A. APPLICATION STATE AND SHARED REFERENCES
    ========================================================================== */
 
-const evidenceRegister = window.HEALTH_SYSTEM_EVIDENCE || [];
-const modelInputs = window.HEALTH_SYSTEM_MODEL || {};
-const evidenceById = new Map(evidenceRegister.map((item) => [item.id, item]));
+const statements = window.HEALTH_SYSTEM_STATEMENTS || [];
+const statementsById = new Map(statements.map((item) => [item.id, item]));
 
-const gpChangeSlider = document.querySelector("#gp-change");
-const gpChangeValue = document.querySelector("#gp-change-value");
-const outputExtraGp = document.querySelector("#output-extra-gp");
-const outputMinorAe = document.querySelector("#output-minor-ae");
-const outputTotalAe = document.querySelector("#output-total-ae");
-const outputWaits = document.querySelector("#output-waits");
+const statementGrid = document.querySelector("#statement-grid");
 const evidenceTooltip = document.querySelector("#evidence-tooltip");
 const tooltipContent = document.querySelector("#tooltip-content");
 const tooltipClose = document.querySelector("#tooltip-close");
 
-let activeEvidenceButton = null;
+let activeStatementCard = null;
 
 /* ========================================================================== 
-   00B. NUMBER FORMATTING
+   01A. SMALL TEXT HELPERS
    ========================================================================== */
 
-const numberFormatter = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 });
-const percentageFormatter = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 1 });
-
-function formatNumber(value) {
-    return numberFormatter.format(Math.round(value));
+function toClassName(value) {
+    return value.toLowerCase().replaceAll(" ", "-");
 }
 
-function formatPercentage(value) {
-    return `${percentageFormatter.format(value)}%`;
-}
-
-/* ========================================================================== 
-   01A. PROVISIONAL GP-TO-A&E MODEL
-   --------------------------------------------------------------------------
-   This is an illustrative calculation. It estimates changes in minor and total
-   A&E visits, but deliberately stops before inventing an A&E waiting-time effect.
-   ========================================================================== */
-
-function calculateScenario(gpIncreasePercentage) {
-    const additionalAppointments = modelInputs.baselineUrgentGpAppointments * (gpIncreasePercentage / 100);
-    const usedAdditionalAppointments = additionalAppointments * modelInputs.gpAppointmentUtilisation;
-    const uncappedMinorAeAvoided = usedAdditionalAppointments / modelInputs.additionalGpAppointmentsPerMinorAeAvoided;
-    const maximumMinorAeAvoided = modelInputs.baselineMinorAeAttendances * modelInputs.maximumSubstitutableMinorAeShare;
-    const minorAeAvoided = Math.min(uncappedMinorAeAvoided, maximumMinorAeAvoided);
-    const totalAeReductionPercentage = (minorAeAvoided / modelInputs.baselineTotalAeAttendances) * 100;
-
-    return {
-        additionalAppointments,
-        minorAeAvoided,
-        totalAeReductionPercentage
-    };
+function createScoreMarkup(label, value, type) {
+    return `
+        <span class="score score--${type}-${toClassName(value)}">
+            <span>${label}</span>
+            <strong>${value}</strong>
+        </span>
+    `;
 }
 
 /* ========================================================================== 
-   01B. SCENARIO OUTPUTS
+   02A. STATEMENT CARD RENDERING
    ========================================================================== */
 
-function updateScenario() {
-    const gpIncreasePercentage = Number(gpChangeSlider.value);
-    const scenario = calculateScenario(gpIncreasePercentage);
+function createStatementCardMarkup(statement) {
+    return `
+        <button class="statement-card" type="button" data-statement-id="${statement.id}" aria-label="Open evidence for: ${statement.statement}">
+            <div class="statement-card__text">${statement.statement}</div>
+            <div class="statement-card__scores">
+                ${createScoreMarkup("Association", statement.association, "association")}
+                ${createScoreMarkup("Evidence", statement.evidence, "evidence")}
+            </div>
+        </button>
+    `;
+}
 
-    gpChangeValue.textContent = formatPercentage(gpIncreasePercentage);
-    outputExtraGp.textContent = `+${formatNumber(scenario.additionalAppointments)}`;
-    outputMinorAe.textContent = scenario.minorAeAvoided === 0 ? "No change" : `About ${formatNumber(scenario.minorAeAvoided)} fewer`;
-    outputTotalAe.textContent = scenario.totalAeReductionPercentage === 0 ? "No change" : `About ${formatPercentage(scenario.totalAeReductionPercentage)} fewer`;
-    outputWaits.textContent = "Not estimated yet";
+function renderStatementCards() {
+    statementGrid.innerHTML = statements.map(createStatementCardMarkup).join("");
 }
 
 /* ========================================================================== 
-   02A. EVIDENCE TOOLTIP CONTENT
+   03A. EVIDENCE TOOLTIP CONTENT
    ========================================================================== */
 
-function createEvidenceTooltipMarkup(evidence) {
-    const sourceMarkup = evidence.sourceUrl
-        ? `<a class="tooltip-source" href="${evidence.sourceUrl}" target="_blank" rel="noopener noreferrer">Read the study ↗</a>`
-        : `<span class="tooltip-source tooltip-source--missing">Local evidence still needed</span>`;
+function createEvidenceTooltipMarkup(statement) {
+    const sourceMarkup = statement.sourceUrl
+        ? `<a class="tooltip-source" href="${statement.sourceUrl}" target="_blank" rel="noopener noreferrer">Read the source ↗</a>`
+        : `<span class="tooltip-source tooltip-source--missing">No direct source identified yet</span>`;
 
     return `
-        <p class="tooltip-evidence-id">${evidence.id} · ${evidence.confidence} confidence</p>
-        <h3>${evidence.title}</h3>
-        <p>${evidence.estimate}</p>
-        <p><strong>What this means here:</strong> ${evidence.meaning}</p>
+        <p class="tooltip-kicker">${statement.id}</p>
+        <h2 id="tooltip-title">${statement.statement}</h2>
+
+        <div class="tooltip-scores">
+            ${createScoreMarkup("Association", statement.association, "association")}
+            ${createScoreMarkup("Evidence", statement.evidence, "evidence")}
+        </div>
+
+        <dl class="tooltip-details">
+            <div>
+                <dt>What was found</dt>
+                <dd>${statement.finding}</dd>
+            </div>
+            <div>
+                <dt>Evidence available</dt>
+                <dd>${statement.evidenceAvailable}</dd>
+            </div>
+            <div>
+                <dt>Sample</dt>
+                <dd>${statement.sample}</dd>
+            </div>
+            <div>
+                <dt>Uncertainty</dt>
+                <dd>${statement.uncertainty}</dd>
+            </div>
+            <div>
+                <dt>Replication</dt>
+                <dd>${statement.replication}</dd>
+            </div>
+        </dl>
+
         ${sourceMarkup}
     `;
 }
 
 /* ========================================================================== 
-   02B. EVIDENCE TOOLTIP POSITIONING
+   03B. EVIDENCE TOOLTIP POSITIONING
    ========================================================================== */
 
-function positionEvidenceTooltip(button) {
-    const buttonBox = button.getBoundingClientRect();
+function positionEvidenceTooltip(card) {
+    const cardBox = card.getBoundingClientRect();
     const tooltipBox = evidenceTooltip.getBoundingClientRect();
     const pagePadding = 12;
-    const gap = 8;
+    const gap = 9;
 
-    let left = buttonBox.left + (buttonBox.width / 2) - (tooltipBox.width / 2);
+    let left = cardBox.left + (cardBox.width / 2) - (tooltipBox.width / 2);
     left = Math.max(pagePadding, Math.min(left, window.innerWidth - tooltipBox.width - pagePadding));
 
-    let top = buttonBox.bottom + gap;
+    let top = cardBox.bottom + gap;
 
     if (top + tooltipBox.height > window.innerHeight - pagePadding) {
-        top = buttonBox.top - tooltipBox.height - gap;
+        top = cardBox.top - tooltipBox.height - gap;
     }
 
     top = Math.max(pagePadding, top);
@@ -114,44 +120,46 @@ function positionEvidenceTooltip(button) {
 }
 
 /* ========================================================================== 
-   02C. EVIDENCE TOOLTIP OPEN AND CLOSE
+   03C. EVIDENCE TOOLTIP OPEN AND CLOSE
    ========================================================================== */
 
-function showEvidenceTooltip(button) {
-    const evidence = evidenceById.get(button.dataset.evidenceId);
+function showEvidenceTooltip(card) {
+    const statement = statementsById.get(card.dataset.statementId);
 
-    if (!evidence) {
+    if (!statement) {
         return;
     }
 
-    activeEvidenceButton = button;
-    tooltipContent.innerHTML = createEvidenceTooltipMarkup(evidence);
+    activeStatementCard = card;
+    tooltipContent.innerHTML = createEvidenceTooltipMarkup(statement);
     evidenceTooltip.hidden = false;
-    positionEvidenceTooltip(button);
+    positionEvidenceTooltip(card);
 }
 
 function hideEvidenceTooltip() {
     evidenceTooltip.hidden = true;
-    activeEvidenceButton = null;
+    activeStatementCard = null;
 }
 
 /* ========================================================================== 
-   03A. EVENT HANDLERS
+   04A. EVENT HANDLERS
    ========================================================================== */
 
-gpChangeSlider.addEventListener("input", updateScenario);
+statementGrid.addEventListener("click", (event) => {
+    const card = event.target.closest("[data-statement-id]");
 
-document.querySelectorAll("[data-evidence-id]").forEach((button) => {
-    button.addEventListener("click", (event) => {
-        event.stopPropagation();
+    if (!card) {
+        return;
+    }
 
-        if (activeEvidenceButton === button && !evidenceTooltip.hidden) {
-            hideEvidenceTooltip();
-            return;
-        }
+    event.stopPropagation();
 
-        showEvidenceTooltip(button);
-    });
+    if (activeStatementCard === card && !evidenceTooltip.hidden) {
+        hideEvidenceTooltip();
+        return;
+    }
+
+    showEvidenceTooltip(card);
 });
 
 tooltipClose.addEventListener("click", hideEvidenceTooltip);
@@ -167,13 +175,13 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("resize", () => {
-    if (activeEvidenceButton && !evidenceTooltip.hidden) {
-        positionEvidenceTooltip(activeEvidenceButton);
+    if (activeStatementCard && !evidenceTooltip.hidden) {
+        positionEvidenceTooltip(activeStatementCard);
     }
 });
 
 /* ========================================================================== 
-   04A. INITIAL PAGE RENDER
+   05A. INITIAL PAGE RENDER
    ========================================================================== */
 
-updateScenario();
+renderStatementCards();
