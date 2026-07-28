@@ -106,7 +106,23 @@ const statementCategoryById = {
     S92: "Hospital flow & discharge",
     S93: "Hospital flow & discharge",
     S94: "Hospital flow & discharge",
-    S95: "Hospital flow & discharge"
+    S95: "Hospital flow & discharge",
+    S96: "Hospital flow & discharge",
+    S97: "Hospital flow & discharge",
+    S98: "Hospital flow & discharge",
+    S99: "Hospital flow & discharge",
+    S100: "Hospital flow & discharge",
+    S101: "Hospital flow & discharge",
+    S102: "Hospital flow & discharge",
+    S103: "Mental health & specialist pathways",
+    S104: "Mental health & specialist pathways",
+    S105: "Mental health & specialist pathways",
+    S106: "Mental health & specialist pathways",
+    S107: "Mental health & specialist pathways",
+    S108: "Hospital flow & discharge",
+    S109: "Hospital flow & discharge",
+    S110: "A&E staffing & operations",
+    S111: "Hospital flow & discharge"
 };
 
 window.HEALTH_SYSTEM_STATEMENTS.forEach((statement) => {
