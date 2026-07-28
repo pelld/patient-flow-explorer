@@ -1,5 +1,5 @@
 /* ========================================================================== 
-   00A. DOMAIN ORDER AND STATEMENT MAPPING
+   00A. DOMAIN ORDER AND ORIGINAL-ID MAPPING
    ========================================================================== */
 
 window.HEALTH_SYSTEM_CATEGORIES = [
@@ -11,7 +11,7 @@ window.HEALTH_SYSTEM_CATEGORIES = [
     "Mental health & specialist pathways"
 ];
 
-const statementCategoryById = {
+const statementCategoryByOriginalId = {
     S01: "Hospital flow & discharge",
     S02: "Hospital flow & discharge",
     S03: "Hospital flow & discharge",
@@ -63,6 +63,7 @@ const statementCategoryById = {
     S49: "Admission avoidance & community care",
     S50: "Admission avoidance & community care",
     S51: "Admission avoidance & community care",
+    S52: "Admission avoidance & community care",
     S53: "Admission avoidance & community care",
     S54: "Hospital flow & discharge",
     S55: "Mental health & specialist pathways",
@@ -125,42 +126,21 @@ const statementCategoryById = {
 };
 
 /* ========================================================================== 
-   00B. SYNTHESIS CORRECTIONS
-   --------------------------------------------------------------------------
-   S33 and S52 described the same intervention, review and outcome. Keep one
-   synthesised statement, retain the precise pooled estimate and remove S52.
-   ========================================================================== */
-
-const inpatientGeriatricAssessment = window.HEALTH_SYSTEM_STATEMENTS.find((statement) => statement.id === "S33");
-
-if (inpatientGeriatricAssessment) {
-    Object.assign(inpatientGeriatricAssessment, {
-        statement: "Comprehensive geriatric assessment modestly increases the chance that admitted older people are alive and living at home",
-        association: "Weak",
-        evidence: "High",
-        evidenceScore: 4,
-        direction: "Supports the statement",
-        finding: "A Cochrane review of 29 randomised trials involving 13,766 older people found a small but dependable increase in the chance of being alive and living at home at follow-up, with a risk ratio of 1.06.",
-        design: "Cochrane systematic review of 29 randomised and cluster-randomised trials involving 13,766 older people.",
-        riskOfBias: "No major concern — allocation was randomised, although blinding of this type of service intervention was not practical.",
-        consistency: "No major concern — the direction was stable across a large international evidence base.",
-        precision: "No major concern — the 95% confidence interval was 1.01 to 1.10.",
-        directness: "Direct for older people admitted to acute hospital care, including services comparable with NHS geriatric care.",
-        otherFactors: "The benefit comes from organised specialist geriatric care, not simply completion of an assessment form.",
-        ratingReason: "The average effect is small but supported by a large randomised evidence base, giving High confidence in a Weak association."
-    });
-}
-
-const duplicateStatementIndex = window.HEALTH_SYSTEM_STATEMENTS.findIndex((statement) => statement.id === "S52");
-
-if (duplicateStatementIndex !== -1) {
-    window.HEALTH_SYSTEM_STATEMENTS.splice(duplicateStatementIndex, 1);
-}
-
-/* ========================================================================== 
-   00C. APPLY DOMAIN CATEGORIES
+   00B. APPLY CATEGORIES BEFORE RENUMBERING
    ========================================================================== */
 
 window.HEALTH_SYSTEM_STATEMENTS.forEach((statement) => {
-    statement.category = statementCategoryById[statement.id] || "Other";
+    const originalId = statement.sourceIds?.[0] || statement.id;
+    statement.category = statementCategoryByOriginalId[originalId] || "Other";
+});
+
+/* ========================================================================== 
+   00C. CLEAN DISPLAY IDS
+   --------------------------------------------------------------------------
+   Original source-record IDs remain in `sourceIds` for the audit trail. The
+   visible cards and map use a fresh uninterrupted sequence after synthesis.
+   ========================================================================== */
+
+window.HEALTH_SYSTEM_STATEMENTS.forEach((statement, index) => {
+    statement.id = `S${String(index + 1).padStart(2, "0")}`;
 });
